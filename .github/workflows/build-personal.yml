@@ -1,0 +1,27 @@
+name: Build personal DMG
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select newest stable Xcode
+        run: |
+          xcode_app="$(ls -1d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -n 1)"
+          sudo xcode-select -switch "$xcode_app/Contents/Developer"
+          swift --version
+
+      - name: Build DMG
+        run: |
+          chmod +x build.sh
+          ./build.sh package ad-hoc arm64 v0.0.0-pro
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Forel-personal-dmg
+          path: dist/release/*
