@@ -83,7 +83,7 @@ final class AppModel: ObservableObject {
     @Published var previewResult: PreviewResult?
     @Published var proUpgrade: ProUpgradeContext?
     @Published private var ruleExpansionPreferences = RuleExpansionPreferences()
-    @Published private(set) var licenseAccessIsLimited = true
+    @Published private(set) var licenseAccessIsLimited = false
     var isPro: Bool { !licenseAccessIsLimited }
     var canAddFolder: Bool { FreePlan.canAddFolder(count: folders.count, isPro: isPro) }
     var canAddRule: Bool { selectedFolderId != nil && selectedFolderIsAllowed }
@@ -466,8 +466,10 @@ final class AppModel: ObservableObject {
     private var isWatchingAllowed: Bool { !paused }
 
     func setLicenseAccessLimited(_ limited: Bool) {
-        licenseAccessIsLimited = limited
-        coordinator.setProAccess(!limited)
+        // Personal build: all Pro features always on (GPL-3.0 modification).
+        _ = limited
+        licenseAccessIsLimited = false
+        coordinator.setProAccess(true)
         refreshWatching()
         reloadRules()
     }
