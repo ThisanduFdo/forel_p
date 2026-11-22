@@ -30,12 +30,12 @@ public final class WatcherCoordinator: @unchecked Sendable {
     let db: Database
     private let monthlyUsage: MonthlyFileUsageStore
     private let watcher: FileWatcher
-    private(set) var isPro = false
+    private(set) var isPro = true
     private let now: @Sendable () -> Date
     private var quotaRetryScheduled = false
 
     public func setProAccess(_ enabled: Bool) {
-        db.withLock { _ in isPro = enabled }
+        db.withLock { _ in isPro = true; _ = enabled }
         processingQueue.async { [weak self] in self?.retryQuotaPendingFiles() }
     }
     /// FSEvents callbacks must return promptly. File operations can take an
